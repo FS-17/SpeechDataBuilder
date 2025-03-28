@@ -1,0 +1,1596 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Speech Data Builder - Free TTS & STT Dataset Creation Tool</title>
+    <meta
+      name="description"
+      content="Create high-quality speech datasets for TTS (Text-to-Speech) and STT (Speech-to-Text) training. Free online tool for AI voice model development with audio transcription, normalization, and export features."
+    />
+    <meta
+      name="keywords"
+      content="speech dataset, TTS dataset, STT dataset, speech to text, text to speech, voice dataset creator, AI voice training, audio transcription tool, speech recognition dataset, LJSpeech format, speech corpus, audio dataset, voice model training, speech data collection, AI speech synthesis"
+    />
+    <meta name="author" content="Speech Data Builder" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:title"
+      content="Speech Data Builder - TTS & STT Dataset Creation Tool"
+    />
+    <meta
+      property="og:description"
+      content="Create professional speech datasets for TTS and STT model training. Free tool with AI transcription, audio processing, and multiple export formats."
+    />
+    <meta property="og:image" content="assets/og-image.jpg" />
+    <meta
+      property="og:url"
+      content="https://fs-17.github.io/SpeechDataBuilder"
+    />
+
+    <!-- Twitter Card data -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Speech Data Builder - TTS & STT Dataset Creator"
+    />
+    <meta
+      name="twitter:description"
+      content="Build speech datasets for AI voice models. Transcribe, normalize, and export audio data in LJSpeech and other formats."
+    />
+    <meta name="twitter:image" content="assets/og-image.jpg" />
+
+    <!-- Canonical URL -->
+    <meta rel="canonical" href="https://fs-17.github.io/SpeechDataBuilder" />
+
+    <!-- Structured Data / JSON-LD -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Speech Data Builder",
+        "applicationCategory": "WebApplication",
+        "operatingSystem": "Web Browser",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "description": "Free tool for creating speech datasets for TTS and STT AI model training. Features include audio processing, AI transcription, and multiple export formats.",
+        "screenshot": "assets/og-image.jpg",
+        "featureList": [
+          "AI-powered audio transcription",
+          "LJSpeech format support",
+          "Multiple export formats",
+          "Waveform visualization",
+          "Text normalization for TTS",
+          "Batch processing capabilities"
+        ]
+      }
+    </script>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <link href="assets/favicon.ico" rel="icon" type="image/x-icon" />
+    <!-- Preload critical fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  </head>
+  <body>
+    <!-- Application header with animated gradient -->
+    <header>
+      <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">
+            <!-- add the logo in the assets -->
+            <img
+              src="assets/logo_name.png"
+              alt="Speech Data Builder - TTS & STT Dataset Tool"
+              height="30"
+              class="d-inline-block align-text-top"
+            />
+          </a>
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+              <li class="nav-item">
+                <a class="nav-link active" href="#" id="files-tab">
+                  <i class="fas fa-file-audio me-1"></i> Files
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#" id="settings-tab">
+                  <i class="fas fa-cog me-1"></i> Settings
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#" id="export-tab">
+                  <i class="fas fa-file-export me-1"></i> Export Dataset
+                </a>
+              </li>
+            </ul>
+            <!-- Theme toggle and help buttons -->
+            <div class="d-flex align-items-center">
+              <div class="theme-switch-wrapper me-3">
+                <span class="theme-icon"><i class="fas fa-sun"></i></span>
+                <label class="theme-switch">
+                  <input type="checkbox" id="theme-toggle" />
+                  <span class="slider"></span>
+                </label>
+                <span class="theme-icon"><i class="fas fa-moon"></i></span>
+              </div>
+              <button
+                class="btn btn-sm btn-outline-light"
+                id="show-keyboard-shortcuts"
+              >
+                <i class="fas fa-keyboard me-1"></i> Shortcuts
+              </button>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Main hero section with animated elements and gradient background -->
+    <div class="hero-section py-5 mb-4">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-lg-7">
+            <div class="hero-content">
+              <div class="badge-container mb-3">
+                <span
+                  class="badge bg-light-accent text-dark-accent rounded-pill px-3 py-2 me-2 mb-2 mb-sm-0"
+                >
+                  <i class="fas fa-microphone me-1"></i> TTS Dataset Creation
+                </span>
+                <span
+                  class="badge bg-light-accent text-dark-accent rounded-pill px-3 py-2"
+                >
+                  <i class="fas fa-headphones me-1"></i> STT Dataset Creation
+                </span>
+              </div>
+              <h1 class="display-4 fw-bold text-gradient mb-3">
+                Speech Data Builder
+              </h1>
+              <p class="lead mb-4">
+                The ultimate free tool for creating high-quality speech datasets
+                for AI voice models, speech recognition, and voice synthesis
+                projects.
+              </p>
+              <div class="hero-buttons">
+                <button
+                  class="btn btn-primary btn-lg me-2 shadow-sm"
+                  id="hero-upload-btn"
+                >
+                  <i class="fas fa-upload me-2"></i>Start Building Datasets
+                </button>
+                <a
+                  href="https://github.com/FS-17/SpeechDataBuilder"
+                  class="btn btn-outline-secondary btn-lg"
+                  target="_blank"
+                >
+                  <i class="fab fa-github me-2"></i>View on GitHub
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-5 d-none d-lg-block">
+            <div class="hero-image-container text-center position-relative">
+              <div class="floating-icon icon-1">
+                <i class="fas fa-file-audio text-primary"></i>
+              </div>
+              <div class="floating-icon icon-2">
+                <i class="fas fa-wave-square text-accent"></i>
+              </div>
+              <div class="floating-icon icon-3">
+                <i class="fas fa-file-export text-success"></i>
+              </div>
+              <img
+                src="assets/logo.png"
+                alt="Speech Data Builder Illustration"
+                class="hero-image img-fluid"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid mt-4 main-page">
+      <!-- Main content area -->
+      <div class="row">
+        <!-- Left sidebar - File management -->
+        <div class="col-md-3" id="file-sidebar">
+          <div class="card">
+            <div
+              class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
+            >
+              <h5 class="mb-0">
+                <i class="fas fa-file-audio me-2"></i>Audio Files
+              </h5>
+              <span class="badge bg-light text-primary" id="file-count">0</span>
+            </div>
+            <div class="card-body p-0">
+              <!-- Upload button and area -->
+              <div class="upload-container p-3 border-bottom">
+                <div class="upload-dropzone" id="upload-dropzone">
+                  <i class="fas fa-cloud-upload-alt"></i>
+                  <p>Drag audio files here or click to upload</p>
+                  <input
+                    type="file"
+                    id="file-input"
+                    multiple
+                    accept="audio/*"
+                    style="
+                      opacity: 0;
+                      position: absolute;
+                      top: 0;
+                      left: 0;
+                      width: 100%;
+                      height: 100%;
+                      cursor: pointer;
+                    "
+                  />
+                </div>
+                <button class="btn btn-primary w-100 mt-2" id="upload-btn">
+                  <i class="fas fa-plus me-1"></i> Upload Audio Files
+                </button>
+                <div class="progress mt-2 d-none" id="upload-progress">
+                  <div class="progress-bar" role="progressbar"></div>
+                </div>
+              </div>
+
+              <!-- File list with search -->
+              <div class="file-search px-3 py-2 border-bottom">
+                <div class="input-group">
+                  <span class="input-group-text bg-transparent border-end-0">
+                    <i class="fas fa-search text-muted"></i>
+                  </span>
+                  <input
+                    type="text"
+                    class="form-control border-start-0"
+                    id="file-search"
+                    placeholder="Search files..."
+                    aria-label="Search files"
+                  />
+                </div>
+              </div>
+
+              <!-- File list -->
+              <div class="file-list">
+                <ul class="list-group list-group-flush" id="file-list">
+                  <!-- Files will be populated here dynamically -->
+                  <li
+                    class="list-group-item text-center text-muted py-5"
+                    id="empty-file-list"
+                  >
+                    <i class="fas fa-music fa-2x mb-3 opacity-50"></i>
+                    <p>No audio files yet</p>
+                    <p class="small">Upload files to get started</p>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="card-footer bg-light">
+              <small class="text-muted">
+                <i class="fas fa-info-circle me-1"></i>
+                Supported formats: MP3, WAV, OGG, FLAC
+              </small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right content area - Audio editor -->
+        <div class="col-md-9" id="audio-editor">
+          <div class="card">
+            <div
+              class="card-header d-flex justify-content-between align-items-center"
+            >
+              <h5 class="mb-0" id="current-file">No file selected</h5>
+              <div class="audio-actions">
+                <button
+                  class="btn btn-sm btn-outline-primary d-none"
+                  id="restore-original"
+                >
+                  <i class="fas fa-history me-1"></i> Restore Original
+                </button>
+              </div>
+            </div>
+
+            <div class="card-body">
+              <!-- Initial empty state -->
+              <div id="empty-state" class="text-center py-5">
+                <h4>No Audio Selected</h4>
+                <p>Upload and select an audio file to begin editing</p>
+                <button class="btn btn-primary mt-3" id="empty-state-upload">
+                  <i class="fas fa-upload me-2"></i>Upload Audio
+                </button>
+              </div>
+
+              <!-- Waveform visualization (initially hidden) -->
+              <div id="waveform-container" class="mb-4 d-none">
+                <div id="waveform"></div>
+              </div>
+
+              <!-- Playback controls -->
+              <div
+                id="playback-controls"
+                class="d-flex align-items-center mb-4 d-none"
+              >
+                <button id="play-btn" class="btn btn-primary me-3">
+                  <i class="fas fa-play" style="margin: 0px"></i>
+                </button>
+
+                <div class="time-display me-3">
+                  <span id="current-time">0:00</span> /
+                  <span id="total-time">0:00</span>
+                </div>
+
+                <div class="volume-control d-flex align-items-center me-3">
+                  <i class="fas fa-volume-up me-2"></i>
+                  <input
+                    type="range"
+                    class="form-range"
+                    id="volume-slider"
+                    min="0"
+                    max="100"
+                    value="80"
+                  />
+                </div>
+
+                <div
+                  class="playback-speed-control d-flex align-items-center ms-auto"
+                >
+                  <i class="fas fa-tachometer-alt me-2"></i>
+                  <select
+                    id="playback-speed"
+                    class="form-select form-select-sm"
+                    style="width: 80px"
+                  >
+                    <option value="0.5">0.5x</option>
+                    <option value="0.75">0.75x</option>
+                    <option value="1.0" selected>1.0x</option>
+                    <option value="1.25">1.25x</option>
+                    <option value="1.5">1.5x</option>
+                    <option value="2.0">2.0x</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Audio editing tools (simplified) -->
+              <div id="editing-tools" class="mb-4 d-none">
+                <div class="row g-2">
+                  <div class="col-md-12">
+                    <div class="alert alert-info">
+                      <i class="fas fa-info-circle me-2"></i>
+                      Select a region on the waveform by clicking and dragging
+                      to enable cutting tools.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Transcript and Normalized Text Layout -->
+              <div class="row">
+                <!-- Left column - Transcript -->
+                <div class="col" id="transcript-column">
+                  <div id="transcript-section" class="mt-4 d-none">
+                    <div
+                      class="d-flex justify-content-between align-items-center"
+                    >
+                      <h5><i class="fas fa-pen me-2"></i>Transcript</h5>
+                      <div id="auto-save-container">
+                        <i class="fas fa-save fa-sm"></i>
+                        <span id="auto-save-indicator" class="text-success"
+                          >All changes saved</span
+                        >
+                      </div>
+                    </div>
+
+                    <div id="transcript-toolbar" class="btn-toolbar">
+                      <div class="btn-group me-2">
+                        <button
+                          id="save-transcript"
+                          class="btn btn-sm btn-outline-success"
+                          title="Save transcript (Ctrl+S)"
+                        >
+                          <i class="fas fa-save"></i> Save Transcript
+                        </button>
+                        <button
+                          id="reset-transcript"
+                          class="btn btn-sm btn-outline-secondary"
+                          title="Revert to last saved version"
+                        >
+                          <i class="fas fa-undo"></i> Reset
+                        </button>
+                      </div>
+                      <div class="btn-group me-2">
+                        <button
+                          id="transcribe-audio"
+                          class="btn btn-sm btn-outline-primary"
+                          title="Use AI to generate transcript"
+                        >
+                          <i class="fas fa-magic"></i> AI Transcribe
+                        </button>
+                      </div>
+                      <div class="btn-group">
+                        <button
+                          id="spellcheck-transcript"
+                          class="btn btn-sm btn-outline-primary"
+                          title="Check spelling errors"
+                        >
+                          <i class="fas fa-spell-check"></i> Spellcheck
+                        </button>
+                      </div>
+                    </div>
+                    <div id="transcript-container">
+                      <textarea
+                        id="transcript-editor"
+                        class="form-control"
+                        placeholder="Enter transcript for this audio file..."
+                        spellcheck="true"
+                      ></textarea>
+                    </div>
+                    <div class="text-muted mt-2 small">
+                      <i class="fas fa-keyboard me-1"></i>
+                      <span class="key-shortcut">Space</span> to play/pause,
+                      <span class="key-shortcut">Ctrl+S</span> to save
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Right column - Normalized Text (initially hidden) -->
+                <div class="col-md-5 d-none" id="normalized-column">
+                  <div id="normalized-text-section" class="mt-4">
+                    <div
+                      class="d-flex justify-content-between align-items-center"
+                    >
+                      <h5>
+                        <i class="fas fa-font me-2"></i>Normalized Text
+                        <span class="badge bg-accent">LJSpeech</span>
+                      </h5>
+                      <div id="normalized-auto-save-container">
+                        <i class="fas fa-save fa-sm"></i>
+                        <span
+                          id="normalized-auto-save-indicator"
+                          class="text-success"
+                          >All changes saved</span
+                        >
+                      </div>
+                    </div>
+
+                    <div class="btn-toolbar mb-2">
+                      <div class="btn-group me-2">
+                        <button
+                          id="save-normalized"
+                          class="btn btn-sm btn-outline-success"
+                        >
+                          <i class="fas fa-save"></i> Save
+                        </button>
+                        <button
+                          id="reset-normalized"
+                          class="btn btn-sm btn-outline-secondary"
+                        >
+                          <i class="fas fa-undo"></i> Reset
+                        </button>
+                      </div>
+                      <div class="btn-group">
+                        <button
+                          id="regenerate-normalized"
+                          class="btn btn-sm btn-outline-primary"
+                        >
+                          <i class="fas fa-sync-alt"></i> Auto-Generate
+                        </button>
+                      </div>
+                    </div>
+
+                    <div id="normalized-container">
+                      <textarea
+                        id="normalized-editor"
+                        class="form-control"
+                        placeholder="Enter or generate normalized version..."
+                      ></textarea>
+                    </div>
+
+                    <div class="text-muted mt-2 small">
+                      <i class="fas fa-info-circle me-1"></i>
+                      Typically lowercase without special characters or numbers.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature overview section with cards and icons -->
+    <div class="features-section py-5 bg-light">
+      <div class="container">
+        <div class="row text-center mb-5">
+          <div class="col-md-8 offset-md-2">
+            <h2 class="section-title">
+              Create Professional TTS & STT Datasets
+            </h2>
+            <p class="section-description">
+              Powerful features that make speech dataset creation simple, fast,
+              and professional
+            </p>
+          </div>
+        </div>
+
+        <div class="row features-row">
+          <div class="col-md-4 mb-4">
+            <div class="feature-card h-100">
+              <div class="feature-icon-container">
+                <div class="feature-icon-wrapper">
+                  <i class="fas fa-magic feature-icon"></i>
+                </div>
+              </div>
+              <div class="feature-content">
+                <h3>AI-Powered Transcription</h3>
+                <p>
+                  Automatically transcribe your audio files using
+                  state-of-the-art AI models from Google and OpenAI with
+                  remarkable accuracy.
+                </p>
+                <ul class="feature-list">
+                  <li>
+                    <i class="fas fa-check-circle text-success"></i>
+                    Whisper/Gemini Integration
+                  </li>
+                  <li>
+                    <i class="fas fa-check-circle text-success"></i>
+                    Multi-language Support
+                  </li>
+                  <li>
+                    <i class="fas fa-check-circle text-success"></i> High
+                    Accuracy Results
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 mb-4">
+            <div class="feature-card h-100">
+              <div class="feature-icon-container">
+                <div class="feature-icon-wrapper">
+                  <i class="fas fa-file-export feature-icon"></i>
+                </div>
+              </div>
+              <div class="feature-content">
+                <h3>Multiple Export Formats</h3>
+                <p>
+                  Export your datasets in LJSpeech, CSV, JSON, and TXT formats
+                  for immediate use in your TTS and STT machine learning models.
+                </p>
+                <ul class="feature-list">
+                  <li>
+                    <i class="fas fa-check-circle text-success"></i> LJSpeech
+                    Format
+                  </li>
+                  <li>
+                    <i class="fas fa-check-circle text-success"></i> Common
+                    Voice Compatible
+                  </li>
+                  <li>
+                    <i class="fas fa-check-circle text-success"></i> Custom
+                    Configurations
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 mb-4">
+            <div class="feature-card h-100">
+              <div class="feature-icon-container">
+                <div class="feature-icon-wrapper">
+                  <i class="fas fa-wave-square feature-icon"></i>
+                </div>
+              </div>
+              <div class="feature-content">
+                <h3>Audio Visualization</h3>
+                <p>
+                  Advanced waveform display with interactive regions and precise
+                  playback controls for perfect audio-text alignment.
+                </p>
+                <ul class="feature-list">
+                  <li>
+                    <i class="fas fa-check-circle text-success"></i> Waveform
+                    Display
+                  </li>
+                  <li>
+                    <i class="fas fa-check-circle text-success"></i> Region
+                    Selection
+                  </li>
+                  <li>
+                    <i class="fas fa-check-circle text-success"></i> Audio
+                    Trimming
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center mt-4">
+          <a
+            href="#"
+            class="btn btn-outline-primary learn-more-btn"
+            id="learn-more-features"
+          >
+            <i class="fas fa-info-circle me-2"></i>Learn More About Features
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- How it works section -->
+    <div class="how-it-works-section py-5">
+      <div class="container">
+        <div class="row text-center mb-5">
+          <div class="col-md-8 offset-md-2">
+            <h2 class="section-title">How Speech Data Builder Works</h2>
+            <p class="section-description">
+              Create professional TTS and STT datasets in three simple steps
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4 mb-4 mb-md-0">
+            <div class="step-card text-center">
+              <div class="step-number">1</div>
+              <div class="step-icon-container mb-3">
+                <i class="fas fa-upload step-icon"></i>
+              </div>
+              <h3 class="step-title">Upload Audio</h3>
+              <p class="step-description">
+                Import your audio files in multiple formats including MP3, WAV,
+                OGG, and FLAC.
+              </p>
+            </div>
+          </div>
+
+          <div class="col-md-4 mb-4 mb-md-0">
+            <div class="step-card text-center">
+              <div class="step-number">2</div>
+              <div class="step-icon-container mb-3">
+                <i class="fas fa-pen step-icon"></i>
+              </div>
+              <h3 class="step-title">Create Transcripts</h3>
+              <p class="step-description">
+                Manually transcribe or use AI to automatically generate accurate
+                transcriptions.
+              </p>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="step-card text-center">
+              <div class="step-number">3</div>
+              <div class="step-icon-container mb-3">
+                <i class="fas fa-download step-icon"></i>
+              </div>
+              <h3 class="step-title">Export Dataset</h3>
+              <p class="step-description">
+                Download your complete dataset in the format of your choice for
+                model training.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer with improved SEO links -->
+    <footer class="footer mt-auto py-4 bg-light">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <h5>Speech Data Builder</h5>
+            <p class="text-muted">
+              The free, open-source tool for creating high-quality speech
+              datasets for TTS and STT model training.
+            </p>
+          </div>
+          <div class="col-md-4">
+            <h5>Use Cases</h5>
+            <ul class="list-unstyled">
+              <li><a href="#" class="text-muted">TTS Model Training</a></li>
+              <li><a href="#" class="text-muted">STT Dataset Creation</a></li>
+              <li>
+                <a href="#" class="text-muted">Voice Assistant Development</a>
+              </li>
+              <li><a href="#" class="text-muted">Speech Research</a></li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <h5>Resources</h5>
+            <ul class="list-unstyled">
+              <li>
+                <a
+                  href="https://github.com/FS-17/SpeechDataBuilder"
+                  target="_blank"
+                  class="text-muted"
+                  >GitHub Repository</a
+                >
+              </li>
+              <li><a href="#" class="text-muted">Documentation</a></li>
+              <li><a href="#" class="text-muted">LJSpeech Format Guide</a></li>
+              <li><a href="#" class="text-muted">API Reference</a></li>
+            </ul>
+          </div>
+        </div>
+        <hr />
+        <div class="text-center">
+          <span class="text-muted">
+            <small
+              >Speech Data Builder © 2024 | Free TTS & STT Dataset Creation
+              Tool</small
+            >
+          </span>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/wavesurfer.js@6/dist/wavesurfer.js"></script>
+    <script src="https://unpkg.com/wavesurfer.js@6/dist/plugin/wavesurfer.regions.min.js"></script>
+    <script src="https://unpkg.com/wavesurfer.js@6/dist/plugin/wavesurfer.cursor.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <!-- Customization for more beautiful appearance -->
+    <script>
+      // Add dynamic theme variable support
+      function updateThemeVariables() {
+        const isDarkMode = document.body.classList.contains("dark-mode");
+        const root = document.documentElement;
+
+        if (isDarkMode) {
+          root.style.setProperty("--card-bg", "#2a2d3e");
+          root.style.setProperty("--bg-gradient-light", "#1a1c25");
+          root.style.setProperty("--text-primary", "#ffffff");
+          root.style.setProperty("--text-secondary", "#b4b7c5");
+          root.style.setProperty("--border-color-rgb", "255, 255, 255");
+          root.style.setProperty("--footer-bg", "#1a1c25");
+          root.style.setProperty("--footer-text", "#b4b7c5");
+          root.style.setProperty("--footer-heading", "#ffffff");
+          root.style.setProperty("--bg-color", "#121212");
+
+          // Change feature cards to have better visibility in dark mode
+          document
+            .querySelectorAll(".feature-card, .step-card")
+            .forEach((card) => {
+              card.style.boxShadow = "0 8px 24px rgba(0, 0, 0, 0.2)";
+            });
+
+          // Fix floating icons for dark mode
+          document.querySelectorAll(".floating-icon").forEach((icon) => {
+            icon.style.backgroundColor = "#2a2d3e";
+            icon.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.3)";
+          });
+
+          // Fix marketing sections for dark mode
+          document.querySelectorAll(".features-section").forEach((section) => {
+            section.style.backgroundColor = "#1a1c25";
+          });
+
+          // Fix light text in dark mode
+          document
+            .querySelectorAll(
+              ".section-description, .step-description, .feature-content p"
+            )
+            .forEach((text) => {
+              text.style.color = "#b4b7c5";
+            });
+
+          // Fix footer class
+          document.querySelector(".footer")?.classList.remove("bg-light");
+          if (document.querySelector(".footer")) {
+            document.querySelector(".footer").style.backgroundColor = "#1a1c25";
+          }
+        } else {
+          root.style.setProperty("--card-bg", "#ffffff");
+          root.style.setProperty("--bg-gradient-light", "#f8f9fa");
+          root.style.setProperty("--text-primary", "#212529");
+          root.style.setProperty("--text-secondary", "#6c757d");
+          root.style.setProperty("--border-color-rgb", "0, 0, 0");
+          root.style.setProperty("--footer-bg", "#f8f9fa");
+          root.style.setProperty("--footer-text", "#6c757d");
+          root.style.setProperty("--footer-heading", "#343a40");
+          root.style.setProperty("--bg-color", "#ffffff");
+
+          // Reset feature cards for light mode
+          document
+            .querySelectorAll(".feature-card, .step-card")
+            .forEach((card) => {
+              card.style.boxShadow = "0 8px 24px rgba(0, 0, 0, 0.04)";
+            });
+
+          // Reset floating icons for light mode
+          document.querySelectorAll(".floating-icon").forEach((icon) => {
+            icon.style.backgroundColor = "#ffffff";
+            icon.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.1)";
+          });
+
+          // Reset marketing sections for light mode
+          document.querySelectorAll(".features-section").forEach((section) => {
+            section.style.backgroundColor = "#f8f9fa";
+          });
+
+          // Reset footer class
+          document.querySelector(".footer")?.classList.add("bg-light");
+          if (document.querySelector(".footer")) {
+            document.querySelector(".footer").style.backgroundColor = "#f8f9fa";
+          }
+        }
+      }
+
+      // Set dynamic theme colors based on preferred color scheme
+      document.addEventListener("DOMContentLoaded", function () {
+        // Initialize empty file list message
+        updateFileCount();
+
+        // Handle empty state upload button
+        document
+          .getElementById("empty-state-upload")
+          ?.addEventListener("click", function () {
+            document.getElementById("file-input").click();
+          });
+
+        // Show keyboard shortcuts when clicking the button
+        document
+          .getElementById("show-keyboard-shortcuts")
+          ?.addEventListener("click", function () {
+            const shortcutsTooltip =
+              document.getElementById("shortcuts-tooltip");
+            if (shortcutsTooltip) {
+              const isVisible =
+                shortcutsTooltip.style.transform === "translateY(0px)";
+              shortcutsTooltip.style.transform = isVisible
+                ? "translateY(calc(110%))"
+                : "translateY(0px)";
+            }
+          });
+
+        // Add search functionality
+        const fileSearch = document.getElementById("file-search");
+        if (fileSearch) {
+          fileSearch.addEventListener("input", function () {
+            const searchTerm = this.value.toLowerCase();
+            const fileItems = document.querySelectorAll(
+              "#file-list .file-item"
+            );
+
+            fileItems.forEach((item) => {
+              const fileName = item
+                .querySelector("span")
+                .textContent.toLowerCase();
+              if (fileName.includes(searchTerm)) {
+                item.style.display = "";
+              } else {
+                item.style.display = "none";
+              }
+            });
+          });
+        }
+
+        // Function to update file count badge
+        function updateFileCount() {
+          const fileList = document.getElementById("file-list");
+          const fileCount = document.getElementById("file-count");
+          const emptyFileList = document.getElementById("empty-file-list");
+
+          if (fileList && fileCount) {
+            const count = fileList.querySelectorAll(".file-item").length;
+            fileCount.textContent = count;
+
+            // Show/hide empty state based on file count
+            if (emptyFileList) {
+              emptyFileList.style.display = count > 0 ? "none" : "block";
+            }
+          }
+        }
+
+        // Listen for file additions
+        const observer = new MutationObserver(function (mutations) {
+          updateFileCount();
+        });
+
+        const fileList = document.getElementById("file-list");
+        if (fileList) {
+          observer.observe(fileList, { childList: true });
+        }
+
+        // Add dark mode class to document element for proper CSS variable access
+        const themeToggle = document.getElementById("theme-toggle");
+        if (themeToggle) {
+          themeToggle.addEventListener("change", function () {
+            if (this.checked) {
+              document.body.classList.add("dark-mode");
+              document.documentElement.setAttribute("data-theme", "dark");
+              // Save theme preference to localStorage
+              localStorage.setItem("theme", "dark");
+            } else {
+              document.body.classList.remove("dark-mode");
+              document.documentElement.setAttribute("data-theme", "light");
+              // Save theme preference to localStorage
+              localStorage.setItem("theme", "light");
+            }
+            updateThemeVariables();
+          });
+        }
+
+        // Check for saved theme preference first
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme && themeToggle) {
+          if (savedTheme === "dark") {
+            themeToggle.checked = true;
+            document.body.classList.add("dark-mode");
+            document.documentElement.setAttribute("data-theme", "dark");
+            updateThemeVariables();
+          } else if (savedTheme === "light") {
+            themeToggle.checked = false;
+            document.body.classList.remove("dark-mode");
+            document.documentElement.setAttribute("data-theme", "light");
+            updateThemeVariables();
+          }
+        }
+        // Only check system preference if no saved preference exists
+        else if (themeToggle) {
+          const prefersDarkScheme = window.matchMedia(
+            "(prefers-color-scheme: dark)"
+          );
+          if (prefersDarkScheme.matches) {
+            themeToggle.checked = true;
+            document.body.classList.add("dark-mode");
+            document.documentElement.setAttribute("data-theme", "dark");
+            updateThemeVariables();
+          } else {
+            themeToggle.checked = false;
+            document.body.classList.remove("dark-mode");
+            document.documentElement.setAttribute("data-theme", "light");
+            updateThemeVariables();
+          }
+        }
+      });
+    </script>
+
+    <!-- Combined JavaScript files -->
+    <script src="utilities.js"></script>
+    <script src="scripts.js"></script>
+    <script src="settings-handler.js"></script>
+    <script src="ai-service-handler.js"></script>
+    <script src="transcript-handler.js"></script>
+    <script src="export-handler.js"></script>
+
+    <!-- CSS for the new sections -->
+    <style>
+      /* Hero Section Styles */
+      .hero-section {
+        background: linear-gradient(
+          135deg,
+          var(--bg-color) 0%,
+          var(--bg-gradient-light) 100%
+        );
+        position: relative;
+        overflow: hidden;
+        border-radius: 0 0 30px 30px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      }
+
+      .text-gradient {
+        background: linear-gradient(
+          90deg,
+          var(--primary-color),
+          var(--accent-color)
+        );
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        display: inline-block;
+      }
+
+      .hero-content {
+        padding: 2rem 0;
+        position: relative;
+        z-index: 2;
+      }
+
+      .badge-container {
+        margin-bottom: 1.5rem;
+      }
+
+      .bg-light-accent {
+        background-color: rgba(var(--accent-rgb), 0.1);
+        border: 1px solid rgba(var(--accent-rgb), 0.2);
+      }
+
+      .text-dark-accent {
+        color: var(--accent-color);
+      }
+
+      .hero-buttons {
+        margin-top: 2rem;
+      }
+
+      .hero-image-container {
+        position: relative;
+        padding: 1.5rem;
+      }
+
+      .hero-image {
+        max-width: 100%;
+        height: auto;
+        position: relative;
+        z-index: 1;
+        animation: float 6s ease-in-out infinite;
+        filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.1));
+      }
+
+      .floating-icon {
+        position: absolute;
+        font-size: 2rem;
+        background: var(--card-bg);
+        border-radius: 50%;
+        width: 3.5rem;
+        height: 3.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        z-index: 2;
+      }
+
+      .icon-1 {
+        top: 15%;
+        left: 10%;
+        animation: float 5s ease-in-out infinite;
+      }
+
+      .icon-2 {
+        top: 55%;
+        right: 15%;
+        animation: float 4s ease-in-out infinite 1s;
+      }
+
+      .icon-3 {
+        bottom: 10%;
+        left: 20%;
+        animation: float 6s ease-in-out infinite 0.5s;
+      }
+
+      @keyframes float {
+        0% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+        100% {
+          transform: translateY(0px);
+        }
+      }
+
+      /* Features Section Styles */
+      .features-section {
+        padding: 5rem 0;
+        background-color: var(--bg-gradient-light);
+        border-radius: 30px;
+        margin: 2rem 0;
+      }
+
+      .section-title {
+        position: relative;
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+
+      .section-title:after {
+        content: "";
+        position: absolute;
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(
+          90deg,
+          var(--primary-color),
+          var(--accent-color)
+        );
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: 2px;
+      }
+
+      .section-description {
+        font-size: 1.2rem;
+        color: var(--text-secondary);
+        max-width: 700px;
+        margin: 0 auto;
+      }
+
+      .feature-card {
+        background-color: var(--card-bg);
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+        padding: 2rem;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(var(--border-color-rgb), 0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+        border-color: rgba(var(--primary-rgb), 0.2);
+      }
+
+      .feature-icon-container {
+        margin-bottom: 1.5rem;
+      }
+
+      .feature-icon-wrapper {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--accent-color)
+        );
+        margin: 0 auto;
+        box-shadow: 0 8px 16px rgba(var(--accent-rgb), 0.3);
+      }
+
+      .feature-icon {
+        font-size: 2rem;
+        color: white;
+      }
+
+      .feature-content {
+        flex: 1;
+      }
+
+      .feature-content h3 {
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+      }
+
+      .feature-content p {
+        margin-bottom: 1.5rem;
+        color: var(--text-secondary);
+      }
+
+      .feature-list {
+        list-style: none;
+        padding-left: 0;
+        text-align: left;
+        margin-top: auto;
+      }
+
+      .feature-list li {
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: flex-start;
+        color: var(--text-secondary);
+      }
+
+      .feature-list li i {
+        margin-right: 0.5rem;
+        margin-top: 0.25rem;
+      }
+
+      .learn-more-btn {
+        padding: 0.75rem 2rem;
+        border-radius: 30px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+      }
+
+      .learn-more-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.2);
+      }
+
+      /* How it works section */
+      .how-it-works-section {
+        padding: 5rem 0;
+      }
+
+      .step-card {
+        background-color: var(--card-bg);
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+        padding: 2rem;
+        position: relative;
+        transition: all 0.3s ease;
+        height: 100%;
+        border: 1px solid rgba(var(--border-color-rgb), 0.1);
+      }
+
+      .step-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+        border-color: rgba(var(--primary-rgb), 0.2);
+      }
+
+      .step-number {
+        position: absolute;
+        top: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--accent-color)
+        );
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.2rem;
+        box-shadow: 0 4px 10px rgba(var(--primary-rgb), 0.3);
+      }
+
+      .step-icon-container {
+        margin-top: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .step-icon {
+        font-size: 2.5rem;
+        color: var(--primary-color);
+      }
+
+      .step-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+      }
+
+      .step-description {
+        color: var(--text-secondary);
+      }
+
+      /* Footer styles */
+      .footer {
+        background-color: var(--footer-bg) !important;
+        color: var(--footer-text);
+        border-top: 1px solid rgba(var(--border-color-rgb), 0.1);
+      }
+
+      .footer h5 {
+        color: var(--footer-heading);
+        font-weight: 600;
+        margin-bottom: 1.2rem;
+      }
+
+      .footer .text-muted {
+        color: var(--footer-text) !important;
+      }
+
+      .footer a.text-muted {
+        transition: color 0.2s ease-in-out;
+      }
+
+      .footer a.text-muted:hover {
+        color: var(--primary-color) !important;
+        text-decoration: none;
+      }
+
+      .footer hr {
+        border-color: rgba(var(--border-color-rgb), 0.1);
+        margin: 1.5rem 0;
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 991.98px) {
+        .hero-content {
+          text-align: center;
+          padding: 3rem 0 1.5rem;
+        }
+
+        .badge-container,
+        .hero-buttons {
+          justify-content: center;
+        }
+      }
+
+      @media (max-width: 767.98px) {
+        .feature-card,
+        .step-card {
+          margin-bottom: 3rem;
+        }
+
+        .features-section,
+        .how-it-works-section {
+          padding: 3rem 0;
+        }
+      }
+    </style>
+
+    <!-- JavaScript for hero section interactions -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Hero upload button
+        const heroUploadBtn = document.getElementById("hero-upload-btn");
+        if (heroUploadBtn) {
+          heroUploadBtn.addEventListener("click", function () {
+            document.getElementById("file-input").click();
+          });
+        }
+
+        // Learn more button
+        const learnMoreBtn = document.getElementById("learn-more-features");
+        if (learnMoreBtn) {
+          learnMoreBtn.addEventListener("click", function (e) {
+            e.preventDefault();
+            document.querySelector(".features-section").scrollIntoView({
+              behavior: "smooth",
+            });
+          });
+        }
+
+        // Add dark mode class to document element for proper CSS variable access
+        const themeToggle = document.getElementById("theme-toggle");
+        if (themeToggle) {
+          themeToggle.addEventListener("change", function () {
+            if (this.checked) {
+              document.body.classList.add("dark-mode");
+              document.documentElement.setAttribute("data-theme", "dark");
+              // Save theme preference to localStorage
+              localStorage.setItem("theme", "dark");
+            } else {
+              document.body.classList.remove("dark-mode");
+              document.documentElement.setAttribute("data-theme", "light");
+              // Save theme preference to localStorage
+              localStorage.setItem("theme", "light");
+            }
+            updateThemeVariables();
+          });
+        }
+
+        // Check for saved theme preference first
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme && themeToggle) {
+          if (savedTheme === "dark") {
+            themeToggle.checked = true;
+            document.body.classList.add("dark-mode");
+            document.documentElement.setAttribute("data-theme", "dark");
+            updateThemeVariables();
+          } else if (savedTheme === "light") {
+            themeToggle.checked = false;
+            document.body.classList.remove("dark-mode");
+            document.documentElement.setAttribute("data-theme", "light");
+            updateThemeVariables();
+          }
+        }
+        // Only check system preference if no saved preference exists
+        else if (themeToggle) {
+          const prefersDarkScheme = window.matchMedia(
+            "(prefers-color-scheme: dark)"
+          );
+          if (prefersDarkScheme.matches) {
+            themeToggle.checked = true;
+            document.body.classList.add("dark-mode");
+            document.documentElement.setAttribute("data-theme", "dark");
+            updateThemeVariables();
+          } else {
+            themeToggle.checked = false;
+            document.body.classList.remove("dark-mode");
+            document.documentElement.setAttribute("data-theme", "light");
+            updateThemeVariables();
+          }
+        }
+
+        // Initialize theme variables
+        updateThemeVariables();
+
+        // Listen for system theme changes only if user hasn't set a preference
+        const prefersDarkScheme = window.matchMedia(
+          "(prefers-color-scheme: dark)"
+        );
+        prefersDarkScheme.addEventListener("change", (e) => {
+          // Only apply system preference changes if there's no user preference saved
+          if (!localStorage.getItem("theme") && themeToggle) {
+            if (e.matches) {
+              themeToggle.checked = true;
+              document.body.classList.add("dark-mode");
+              document.documentElement.setAttribute("data-theme", "dark");
+            } else {
+              themeToggle.checked = false;
+              document.body.classList.remove("dark-mode");
+              document.documentElement.setAttribute("data-theme", "light");
+            }
+            updateThemeVariables();
+          }
+        });
+      });
+    </script>
+
+    <!-- Additional CSS for dark mode compatibility -->
+    <style>
+      /* Dark mode specific overrides */
+      body.dark-mode {
+        background-color: #121212;
+        color: #ffffff;
+      }
+
+      body.dark-mode .hero-section {
+        background: linear-gradient(135deg, #1a1c25 0%, #121212 100%);
+      }
+
+      body.dark-mode .features-section {
+        background-color: #1a1c25 !important;
+      }
+
+      body.dark-mode .feature-card,
+      body.dark-mode .step-card {
+        background-color: #2a2d3e;
+        border-color: rgba(255, 255, 255, 0.08);
+      }
+
+      body.dark-mode .footer {
+        background-color: #1a1c25 !important;
+        color: #b4b7c5;
+      }
+
+      body.dark-mode .footer h5 {
+        color: #ffffff;
+      }
+
+      body.dark-mode .footer .text-muted,
+      body.dark-mode .footer a.text-muted {
+        color: #b4b7c5 !important;
+      }
+
+      body.dark-mode .section-title {
+        color: #ffffff;
+      }
+
+      body.dark-mode .section-description,
+      body.dark-mode .step-description,
+      body.dark-mode .feature-content p,
+      body.dark-mode .feature-list li {
+        color: #b4b7c5;
+      }
+
+      body.dark-mode .feature-content h3,
+      body.dark-mode .step-title {
+        color: #ffffff;
+      }
+
+      body.dark-mode .card {
+        background-color: #2a2d3e;
+        border-color: rgba(255, 255, 255, 0.08);
+      }
+
+      body.dark-mode .card-header {
+        background-color: #1e2130;
+        border-color: rgba(255, 255, 255, 0.08);
+      }
+
+      body.dark-mode .card-footer {
+        background-color: #1e2130;
+        border-color: rgba(255, 255, 255, 0.08);
+      }
+
+      body.dark-mode .card-footer.bg-light {
+        background-color: #1e2130 !important;
+      }
+
+      body.dark-mode .btn-outline-primary {
+        color: #4f8bfd;
+        border-color: #4f8bfd;
+      }
+
+      body.dark-mode .btn-outline-secondary {
+        color: #b4b7c5;
+        border-color: #b4b7c5;
+      }
+
+      body.dark-mode .learn-more-btn {
+        color: #4f8bfd;
+        border-color: #4f8bfd;
+      }
+
+      body.dark-mode .learn-more-btn:hover {
+        background-color: #4f8bfd;
+        color: #1a1c25;
+      }
+
+      /* Ensure waveform looks good in dark mode */
+      body.dark-mode #waveform {
+        background-color: #2a2d3e !important;
+      }
+
+      body.dark-mode #waveform-loading {
+        background-color: rgba(26, 32, 44, 0.8) !important;
+      }
+
+      body.dark-mode #waveform-loading .loading-text {
+        color: #b4b7c5;
+      }
+
+      /* Fix form elements in dark mode */
+      body.dark-mode .form-control,
+      body.dark-mode .form-select {
+        background-color: #1e2130;
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, 0.08);
+      }
+
+      body.dark-mode .form-control::placeholder {
+        color: #b4b7c5;
+      }
+
+      body.dark-mode .form-control:focus,
+      body.dark-mode .form-select:focus {
+        border-color: #4f8bfd;
+        box-shadow: 0 0 0 3px rgba(79, 139, 253, 0.2);
+      }
+
+      /* Fix other UI elements */
+      body.dark-mode .time-display {
+        background-color: #1e2130;
+        color: #b4b7c5;
+      }
+
+      body.dark-mode .badge.bg-light {
+        background-color: #1e2130 !important;
+        color: #b4b7c5;
+      }
+
+      body.dark-mode .file-item {
+        background-color: #2a2d3e;
+        border-color: rgba(255, 255, 255, 0.08);
+      }
+
+      body.dark-mode .file-item:hover {
+        background-color: #333a52;
+      }
+
+      body.dark-mode .file-item.active {
+        background-color: #3a4466;
+        border-left-color: #4f8bfd;
+      }
+    </style>
+  </body>
+</html>
