@@ -12,6 +12,15 @@
   --shadow-lg:0 8px 24px #0000001f; --primary-color-rgb:58,134,255;
   --footer-bg:var(--light-gray); --footer-text:var(--text-secondary);
   --footer-heading:var(--text-primary);
+
+  /* Aliases used by inline styles in index.html */
+  --card-bg: var(--card-background);
+  --bg-gradient-light: #f8f9fa; /* subtle light gradient end */
+  --bg-color: var(--background-color);
+  /* RGB helpers used for rgba() in inline CSS */
+  --primary-rgb: var(--primary-color-rgb);
+  --accent-rgb: 0, 198, 255; /* from #00c6ff */
+  --border-color-rgb: 0, 0, 0;
 }
 
 [data-theme="dark"] {
@@ -23,6 +32,14 @@
   --border-color:#ffffff12; --input-background:#1e2734; --shadow-sm:0 2px 8px #00000040;
   --shadow-md:0 4px 12px #00000059; --shadow-lg:0 8px 24px #00000073;
   --primary-color-rgb:79,139,253; --footer-bg:#1a1c25;
+
+  /* Keep aliases in sync for dark theme */
+  --card-bg: var(--card-background);
+  --bg-gradient-light: #1a1c25; /* darker gradient end */
+  --bg-color: var(--background-color);
+  --primary-rgb: var(--primary-color-rgb);
+  --accent-rgb: 32, 207, 255; /* from #20cfff */
+  --border-color-rgb: 255, 255, 255;
 }
 
 body {
@@ -88,6 +105,7 @@ input:checked + .slider:before { transform:translateX(26px); }
   border:2px dashed var(--dark-gray); border-radius:var(--border-radius);
   padding:36px 24px; text-align:center; transition:all var(--transition-speed);
   cursor:pointer; margin-bottom:16px; background:var(--card-background);
+  position: relative; /* ensure absolute children (file input) are positioned correctly */
 }
 .upload-dropzone:hover,.upload-dropzone.active {
   border-color:var(--primary-color); 
@@ -387,6 +405,22 @@ input:checked + .slider:before { transform:translateX(26px); }
   padding:2px 6px; border-radius:4px; font-family:'SF Mono','Consolas',monospace;
   font-size:.8rem; margin:0 2px;
 }
+
+/* Accessibility: focus styles for interactive elements */
+:focus-visible {
+  outline: 3px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Improve contrast for badges in light mode */
+.badge.bg-light-accent { color: var(--accent-color); }
+
+/* Modal styling polish for dark mode */
+[data-theme="dark"] .modal-content { background-color: var(--card-background); color: var(--text-primary); }
+[data-theme="dark"] .btn-close { filter: invert(1); }
+
+/* Ensure navbar toggler has accessible outline */
+.navbar-toggler:focus { box-shadow: 0 0 0 0.25rem rgba(var(--primary-color-rgb), 0.35); }
 
 /* Animations */
 @keyframes fadeIn {

@@ -9,15 +9,16 @@
     GOOGLE_AI_STUDIO: {
       name: "Google AI Studio",
       apiEndpoint: "https://generativelanguage.googleapis.com/v1beta/models/",
-      defaultModel: "gemini-2.0-flash-lite",
+      defaultModel: "gemini-2.5-flash-lite",
       docs: "https://ai.google.dev/tutorials/setup",
       testEndpoint: "https://generativelanguage.googleapis.com/v1beta/models",
       audioTranscription: true,
       textGeneration: true,
       models: {
-        "gemini-2.0-flash-lite": "Gemini 2.0 Flash-Lite (Default)",
-        "gemini-exp-1206": "Gemini 2.0 Pro",
-        "gemma-3": "Gemma 3",
+        "gemini-2.5-flash-lite": "Gemini 2.5 Flash-Lite (Default)",
+        "gemini-2.5-flash": "Gemini 2.5 Flash",
+        "gemini-2.5-pro": "Gemini 2.5 Pro",
+        "gemma-3-4b-it": "Gemma 3 4B IT",
       },
     },
     OPENAI: {

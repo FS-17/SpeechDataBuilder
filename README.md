@@ -76,7 +76,7 @@ Speech Data Builder excels at creating datasets in the popular LJSpeech format, 
 
 Connect with leading AI services to automate the transcription process:
 
-- **Google AI Studio**: Leverage Gemini models for accurate transcription
+- **Google AI Studio**: Leverage the latest Gemini models (including 2.5 Pro and Flash) for accurate transcription
 - **OpenAI**: Utilize Whisper and GPT models for speech recognition and text normalization
 
 ## 📝 Speech Dataset Creation Guide
@@ -189,4 +189,17 @@ For questions, feedback, or support, please [open an issue](https://github.com/F
 
 **Speech Data Builder** — Making voice dataset creation accessible to everyone.
 
-_Keywords: TTS dataset, STT dataset, speech recognition data, voice dataset creator, LJSpeech format, speech corpus, AI voice training_
+\_Keywords: TTS dataset, STT dataset, speech recognition data, voice dataset creator, LJSpeech format, speech corpus, AI voice training
+
+## What’s new (Sep 2025)
+
+- Import workflow: the ability to import existing datasets in LJSpeech, CSV, JSON, or TXT formats
+- Update gemini model references to include latest versions
+- Offline support (PWA): installable app with cached core assets for offline work
+- Keyboard shortcuts: Space, ←/→, A/D, W/S, R, Ctrl+S, Ctrl+Alt+T
+- Accessibility: Skip link to main content, improved focus outlines
+- SEO: Correct canonical link and updated social sharing image
+
+### Install as an app (optional)
+
+Open the site in Chrome/Edge and use “Install app” from the address bar. Works offline after first load.

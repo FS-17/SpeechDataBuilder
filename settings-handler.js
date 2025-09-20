@@ -767,7 +767,8 @@
 
               // Set default or saved model
               modelSelect.value =
-                currentSettings?.aiSettings?.activeModel || "gemini-pro";
+                currentSettings?.aiSettings?.activeModel ||
+                "gemini-2.5-flash-lite";
             } else {
               modelSelectionContainer.classList.add("d-none");
             }
@@ -1224,6 +1225,26 @@
   window.settingsHandler = {
     getSettings: function () {
       return { ...currentSettings };
+    },
+
+    // Create settings UI on demand and return the container element.
+    // This aligns with callers expecting `createSettingsUI()` to be available.
+    createSettingsUI: function () {
+      let settingsUI = document.getElementById("settings-container");
+      if (!settingsUI) {
+        settingsUI = createSettingsUI();
+        // Append into main page if available
+        const host = document.querySelector(".main-page") || document.body;
+        host.appendChild(settingsUI);
+      }
+      // Ensure it reflects current settings
+      updateSettingsUI();
+      return settingsUI;
+    },
+
+    // Optional: expose a show method for external callers
+    showSettingsUI: function () {
+      showSettingsUI();
     },
 
     getTranscriptFormatter: function () {

@@ -1,0 +1,28 @@
+{
+    "name": "Speech Data Builder",
+    "short_name": "SDB",
+    "description": "Create high-quality speech datasets for TTS & STT with AI transcription and LJSpeech export.",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#121212",
+    "theme_color": "#3a86ff",
+    "icons": [
+        {
+            "src": "assets/favicon.ico",
+            "sizes": "48x48 64x64 128x128",
+            "type": "image/x-icon"
+        },
+        {
+            "src": "assets/logo.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "assets/logo.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}

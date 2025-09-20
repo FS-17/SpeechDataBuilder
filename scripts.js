@@ -75,6 +75,7 @@ document.addEventListener("DOMContentLoaded", function () {
       // Hide hero section when files are uploaded
       hideMarketingSectionsOnFileUpload();
 
+      let addedCount = 0;
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         if (!file.type.startsWith("audio/")) {
@@ -105,6 +106,18 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         fileList.appendChild(fileItem);
+        addedCount++;
+      }
+
+      // If we added any audio files, hide the empty placeholder and update the badge immediately
+      if (addedCount > 0) {
+        const emptyPlaceholder = document.getElementById("empty-file-list");
+        if (emptyPlaceholder) emptyPlaceholder.style.display = "none";
+        const fileCountBadge = document.getElementById("file-count");
+        if (fileCountBadge) {
+          const countNow = fileList.querySelectorAll(".file-item").length;
+          fileCountBadge.textContent = countNow;
+        }
       }
     }
 
@@ -240,6 +253,10 @@ function toggleMarketingSections(activeTabId) {
   marketingSections.forEach((section) => {
     if (section) {
       if (shouldShowMarketing) {
+        // Reset any inline styles that may have been set during collapse
+        section.style.opacity = "";
+        section.style.height = "";
+        section.style.margin = "";
         section.classList.remove("d-none");
       } else {
         section.classList.add("d-none");
@@ -271,8 +288,7 @@ function hideMarketingSectionsOnFileUpload() {
       // Then hide after transition completes
       setTimeout(() => {
         section.classList.add("d-none");
-        section.style.height = "0";
-        section.style.margin = "0";
+        // Do not permanently set height/margin to avoid layout break when showing again
       }, 500);
     }
   });
@@ -300,6 +316,53 @@ function initWaveform() {
   progressGradientFill.addColorStop(1, "rgba(109, 93, 252, 0.8)");
 
   // Create WaveSurfer instance with enhanced styling - Updated for WaveSurfer v7.x
+  // Resolve plugins across versions (v6/v7 UMD names)
+  const RegionsPluginFactory =
+    (window.Regions && window.Regions.create ? window.Regions : null) ||
+    (window.RegionsPlugin && window.RegionsPlugin.create
+      ? window.RegionsPlugin
+      : null) ||
+    (WaveSurfer.regions && WaveSurfer.regions.create
+      ? WaveSurfer.regions
+      : null);
+  const CursorPluginFactory =
+    (window.Cursor && window.Cursor.create ? window.Cursor : null) ||
+    (window.CursorPlugin && window.CursorPlugin.create
+      ? window.CursorPlugin
+      : null) ||
+    (WaveSurfer.cursor && WaveSurfer.cursor.create ? WaveSurfer.cursor : null);
+
+  const pluginList = [];
+  if (RegionsPluginFactory) {
+    pluginList.push(
+      RegionsPluginFactory.create({
+        dragSelection: true,
+        slop: 5,
+        maxRegions: 1,
+        color: "rgba(115, 104, 208, 0.52)",
+        maxRegions: 1,
+        formatTimeCallback: function (sec) {
+          return formatTime(sec);
+        },
+      })
+    );
+  }
+  if (CursorPluginFactory) {
+    pluginList.push(
+      CursorPluginFactory.create({
+        showTime: true,
+        opacity: 1,
+        customShowTimeStyle: {
+          "background-color": "#000",
+          color: "#fff",
+          padding: "2px 5px",
+          "font-size": "10px",
+          "border-radius": "3px",
+        },
+      })
+    );
+  }
+
   window.wavesurfer = WaveSurfer.create({
     container: "#waveform",
     waveColor: gradientFill,
@@ -313,30 +376,7 @@ function initWaveform() {
     minPxPerSec: 50,
     hideScrollbar: true,
     autoCenter: true,
-    plugins: [
-      WaveSurfer.regions.create({
-        dragSelection: true,
-        slop: 5,
-        maxRegions: 1,
-        color: "rgba(115, 104, 208, 0.52)",
-        maxRegions: 1,
-
-        formatTimeCallback: function (sec) {
-          return formatTime(sec);
-        },
-      }),
-      WaveSurfer.cursor.create({
-        showTime: true,
-        opacity: 1,
-        customShowTimeStyle: {
-          "background-color": "#000",
-          color: "#fff",
-          padding: "2px 5px",
-          "font-size": "10px",
-          "border-radius": "3px",
-        },
-      }),
-    ],
+    plugins: pluginList,
   });
 
   // Add loading indicator
@@ -585,12 +625,34 @@ function showAudioEditor() {
 
 // Ensure only one region exists at a time
 function ensureSingleRegion(region) {
-  const regions = Object.values(window.wavesurfer.regions.list);
+  const regions = getRegionsList();
   if (regions.length > 1) {
     regions.forEach((existingRegion) => {
       if (existingRegion.id !== region.id) existingRegion.remove();
     });
   }
+}
+
+// Resolve regions plugin across versions
+function getRegionsPlugin() {
+  if (!window.wavesurfer) return null;
+  return (
+    window.wavesurfer.regions ||
+    (window.wavesurfer.plugins && window.wavesurfer.plugins.regions) ||
+    null
+  );
+}
+
+function getRegionsList() {
+  const plugin = getRegionsPlugin();
+  if (!plugin) return [];
+  if (plugin.list) return Object.values(plugin.list);
+  if (typeof plugin.getRegions === "function") {
+    const r = plugin.getRegions();
+    if (Array.isArray(r)) return r;
+    if (r && typeof r === "object") return Object.values(r);
+  }
+  return [];
 }
 
 // Setup play/pause button
@@ -747,7 +809,7 @@ function updateRegionControls(hasRegion) {
 function playSelectedRegion() {
   if (!window.wavesurfer) return;
 
-  const regions = Object.values(window.wavesurfer.regions.list);
+  const regions = getRegionsList();
   if (regions.length === 0) return;
   regions[0].play();
 }
@@ -756,47 +818,85 @@ function playSelectedRegion() {
 function trimAudioToSelection() {
   if (!window.wavesurfer) return;
 
-  const regions = Object.values(window.wavesurfer.regions.list);
+  const regions = getRegionsList();
   if (regions.length === 0) return;
 
   const region = regions[0];
+  const curFileName = document.getElementById("current-file")?.textContent;
+  let audioBuffer = null;
+  try {
+    if (window.wavesurfer.backend?.buffer) {
+      audioBuffer = window.wavesurfer.backend.buffer; // v6 style
+    } else if (typeof window.wavesurfer.getDecodedData === "function") {
+      audioBuffer = window.wavesurfer.getDecodedData(); // v7 style
+    }
+  } catch {}
+
+  if (!audioBuffer || !audioBuffer.sampleRate) {
+    showTransientNotice(
+      "Trimming isn't available with the current audio engine.",
+      "warning"
+    );
+    return;
+  }
 
   // Store the current audio for potential restoration
   if (!window.originalAudio) {
     window.originalAudio = {
-      buffer: window.wavesurfer.backend.buffer,
-      filename: document.getElementById("current-file").textContent,
+      buffer: audioBuffer,
+      filename: curFileName,
     };
   }
 
   // Calculate new buffer parameters
-  const start = Math.floor(
-    region.start * window.wavesurfer.backend.buffer.sampleRate
-  );
-  const end = Math.floor(
-    region.end * window.wavesurfer.backend.buffer.sampleRate
-  );
-  const channels = window.wavesurfer.backend.buffer.numberOfChannels;
+  const start = Math.floor(region.start * audioBuffer.sampleRate);
+  const end = Math.floor(region.end * audioBuffer.sampleRate);
+  const channels = audioBuffer.numberOfChannels;
   const newDuration = region.end - region.start;
 
   // Create a new audio buffer
-  const newBuffer = window.wavesurfer.backend.ac.createBuffer(
+  const ac =
+    window.wavesurfer.backend?.ac ||
+    (typeof AudioContext !== "undefined" ? new AudioContext() : null);
+  if (!ac) {
+    showTransientNotice("Browser doesn't support audio trimming.", "warning");
+    return;
+  }
+  const newBuffer = ac.createBuffer(
     channels,
     end - start,
-    window.wavesurfer.backend.buffer.sampleRate
+    audioBuffer.sampleRate
   );
 
   // Copy each channel's data to the new buffer
   for (let channel = 0; channel < channels; channel++) {
-    const sourceData = window.wavesurfer.backend.buffer.getChannelData(channel);
+    const sourceData = audioBuffer.getChannelData(channel);
     const newData = newBuffer.getChannelData(channel);
     for (let i = 0; i < end - start; i++) {
       newData[i] = sourceData[start + i];
     }
   }
 
-  // Load the new buffer
-  window.wavesurfer.loadDecodedBuffer(newBuffer);
+  // Load the new buffer (only if supported)
+  if (typeof window.wavesurfer.loadDecodedBuffer === "function") {
+    window.wavesurfer.loadDecodedBuffer(newBuffer);
+  } else if (typeof window.wavesurfer.loadBlob === "function") {
+    // Fallback: encode to WAV and load as blob
+    try {
+      const wavBlob = audioBufferToWavBlob(newBuffer);
+      window.wavesurfer.loadBlob(wavBlob);
+    } catch (err) {
+      console.warn("Failed to load trimmed audio buffer:", err);
+      showTransientNotice("Trimming is limited in this browser.", "warning");
+      return;
+    }
+  } else {
+    showTransientNotice(
+      "Trimming isn't supported with the current player.",
+      "warning"
+    );
+    return;
+  }
 
   // Show notification to user
   const notification = document.createElement("div");
@@ -819,10 +919,106 @@ function trimAudioToSelection() {
   clearRegions();
 }
 
+// Minimal WAV encoder to support loadBlob fallback
+function audioBufferToWavBlob(buffer) {
+  const numOfChan = buffer.numberOfChannels;
+  const sampleRate = buffer.sampleRate;
+  const format = 1; // PCM
+  const bitDepth = 16;
+
+  let result;
+  if (numOfChan === 2) {
+    result = interleave(buffer.getChannelData(0), buffer.getChannelData(1));
+  } else {
+    result = buffer.getChannelData(0);
+  }
+
+  const bytesPerSample = bitDepth / 8;
+  const blockAlign = numOfChan * bytesPerSample;
+  const bufferLength = result.length * bytesPerSample;
+  const wavBuffer = new ArrayBuffer(44 + bufferLength);
+  const view = new DataView(wavBuffer);
+
+  /* RIFF identifier */ writeString(view, 0, "RIFF");
+  /* file length */ view.setUint32(4, 36 + bufferLength, true);
+  /* RIFF type */ writeString(view, 8, "WAVE");
+  /* format chunk identifier */ writeString(view, 12, "fmt ");
+  /* format chunk length */ view.setUint32(16, 16, true);
+  /* sample format (raw) */ view.setUint16(20, format, true);
+  /* channel count */ view.setUint16(22, numOfChan, true);
+  /* sample rate */ view.setUint32(24, sampleRate, true);
+  /* byte rate (sample rate * block align) */
+  view.setUint32(28, sampleRate * blockAlign, true);
+  /* block align (channel count * bytes per sample) */
+  view.setUint16(32, blockAlign, true);
+  /* bits per sample */ view.setUint16(34, bitDepth, true);
+  /* data chunk identifier */ writeString(view, 36, "data");
+  /* data chunk length */ view.setUint32(40, bufferLength, true);
+
+  floatTo16BitPCM(view, 44, result);
+
+  return new Blob([view], { type: "audio/wav" });
+}
+
+function writeString(view, offset, string) {
+  for (let i = 0; i < string.length; i++) {
+    view.setUint8(offset + i, string.charCodeAt(i));
+  }
+}
+
+function floatTo16BitPCM(output, offset, input) {
+  for (let i = 0; i < input.length; i++, offset += 2) {
+    const s = Math.max(-1, Math.min(1, input[i]));
+    output.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7fff, true);
+  }
+}
+
+function interleave(inputL, inputR) {
+  const length = inputL.length + inputR.length;
+  const result = new Float32Array(length);
+  let index = 0;
+  let inputIndex = 0;
+  while (index < length) {
+    result[index++] = inputL[inputIndex];
+    result[index++] = inputR[inputIndex];
+    inputIndex++;
+  }
+  return result;
+}
+
+function showTransientNotice(message, type = "info") {
+  const notification = document.createElement("div");
+  const cls =
+    type === "danger"
+      ? "alert-danger"
+      : type === "warning"
+      ? "alert-warning"
+      : type === "success"
+      ? "alert-success"
+      : "alert-info";
+  notification.className = `alert ${cls}`;
+  notification.textContent = message;
+  notification.style.position = "fixed";
+  notification.style.top = "10px";
+  notification.style.right = "10px";
+  notification.style.zIndex = "9999";
+  document.body.appendChild(notification);
+
+  setTimeout(() => {
+    notification.style.opacity = "0";
+    notification.style.transition = "opacity 0.5s ease-out";
+    setTimeout(() => notification.remove(), 500);
+  }, 2500);
+}
+
 // Function to clear all regions
 function clearRegions() {
-  if (!window.wavesurfer?.regions) return;
-  window.wavesurfer.regions.clear();
+  const plugin = getRegionsPlugin();
+  if (!plugin) return;
+  if (typeof plugin.clear === "function") plugin.clear();
+  else if (plugin.list) {
+    Object.values(plugin.list).forEach((r) => r.remove());
+  }
   updateRegionControls(false);
 }
 
@@ -879,16 +1075,37 @@ window.loadAudioFile = function (file, fileName) {
 
     fileReader.onload = function (e) {
       // Clear previous audio
-      window.wavesurfer.empty();
+      try {
+        if (typeof window.wavesurfer.empty === "function") {
+          window.wavesurfer.empty();
+        }
+      } catch {}
 
       // Small delay to ensure container is visible and sized
       setTimeout(() => {
-        // Load audio
-        window.wavesurfer.loadArrayBuffer(e.target.result);
+        // Load audio (support multiple WS versions)
+        try {
+          if (typeof window.wavesurfer.loadArrayBuffer === "function") {
+            window.wavesurfer.loadArrayBuffer(e.target.result);
+          } else if (typeof window.wavesurfer.loadBlob === "function") {
+            const blob = new Blob([e.target.result]);
+            window.wavesurfer.loadBlob(blob);
+          } else if (typeof window.wavesurfer.load === "function") {
+            const blob = new Blob([e.target.result]);
+            const url = URL.createObjectURL(blob);
+            window.wavesurfer.load(url);
+          }
+        } catch (err) {
+          console.error("Failed to load audio:", err);
+        }
         window.audioLoaded = true;
 
         // Force wavesurfer to redraw after loading
-        window.wavesurfer.drawBuffer();
+        try {
+          if (typeof window.wavesurfer.drawBuffer === "function") {
+            window.wavesurfer.drawBuffer();
+          }
+        } catch {}
 
         // Ensure proper layout after drawing
         if (waveformContainer) {
@@ -913,3 +1130,325 @@ window.loadAudioFile = function (file, fileName) {
     console.error("Error loading audio file:", error);
   }
 };
+
+// Replace old shortcuts tooltip logic with modal-safe trigger if needed
+(function () {
+  const btn = document.getElementById("show-keyboard-shortcuts");
+  if (btn) {
+    btn.addEventListener("click", function () {
+      const modalEl = document.getElementById("shortcutsModal");
+      if (modalEl && window.bootstrap?.Modal) {
+        // Reuse a single instance to avoid duplicate backdrops and stuck modals
+        const m =
+          bootstrap.Modal.getOrCreateInstance?.(modalEl) ||
+          new bootstrap.Modal(modalEl);
+        m.show();
+      }
+    });
+  }
+})();
+
+// Global capture listener to prevent browser Save Page on Ctrl/Cmd+S
+(function () {
+  function onSaveShortcut(e) {
+    const isSave =
+      (e.ctrlKey || e.metaKey) &&
+      !e.shiftKey &&
+      !e.altKey &&
+      e.key?.toLowerCase?.() === "s";
+    if (!isSave) return;
+    // Prevent browser "Save Page" dialog
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      // Defer to transcript handler; it will no-op if no current file
+      if (window.transcriptHandler?.saveTranscript) {
+        window.transcriptHandler.saveTranscript();
+      }
+    } catch (err) {
+      console.warn("Save transcript via shortcut failed:", err);
+    }
+  }
+
+  // Capture phase to intercept before the browser
+  document.addEventListener("keydown", onSaveShortcut, { capture: true });
+})();
+
+// Batch transcript import logic
+(function () {
+  // Import: show type selection modal first, then file picker
+  const importBtn = document.getElementById("import-transcripts");
+  const importInput = document.getElementById("transcript-import-input");
+  const importTypeModalEl = document.getElementById("importTypeModal");
+  const confirmImportTypeBtn = document.getElementById("confirm-import-type");
+  const ljspeechNormalizedOption = document.getElementById(
+    "ljspeech-normalized-option"
+  );
+  let importTypeModal;
+
+  function getSelectedImportType() {
+    return (
+      document.querySelector('input[name="importType"]:checked')?.value || "csv"
+    );
+  }
+
+  function updateAcceptForType(type) {
+    if (!importInput) return;
+    const map = {
+      json: ".json",
+      csv: ".csv",
+      tsv: ".tsv",
+      txt: ".txt",
+      ljspeech: ".ljspeech,.txt",
+    };
+    importInput.setAttribute(
+      "accept",
+      map[type] || ".json,.csv,.txt,.tsv,.ljspeech"
+    );
+  }
+
+  function onImportTypeChanged() {
+    const type = getSelectedImportType();
+    updateAcceptForType(type);
+    if (ljspeechNormalizedOption) {
+      ljspeechNormalizedOption.style.display =
+        type === "ljspeech" ? "block" : "none";
+    }
+  }
+
+  // React to radio changes
+  document
+    .getElementById("import-type-options")
+    ?.addEventListener("change", onImportTypeChanged);
+
+  if (importBtn && importInput) {
+    importBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      try {
+        if (!importTypeModal && window.bootstrap?.Modal) {
+          importTypeModal = new bootstrap.Modal(importTypeModalEl);
+        }
+        if (importTypeModal) {
+          // Initialize state based on current selection
+          onImportTypeChanged();
+          importTypeModal.show();
+        } else {
+          // Fallback to direct file picker
+          importInput.click();
+        }
+      } catch (err) {
+        importInput.click();
+      }
+    });
+  }
+
+  if (confirmImportTypeBtn && importInput) {
+    confirmImportTypeBtn.addEventListener("click", () => {
+      // Close modal and then open file chooser
+      try {
+        importTypeModal?.hide();
+      } catch {}
+      setTimeout(() => importInput.click(), 120);
+    });
+  }
+
+  if (importInput) {
+    importInput.addEventListener("change", async (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+
+      const chosenType = getSelectedImportType();
+      const ext = (file.name.split(".").pop() || "").toLowerCase();
+      const text = await file.text();
+
+      const includeNormalized =
+        document.getElementById("import-ljspeech-normalized")?.checked ?? true;
+
+      try {
+        // Prefer chosen type; fall back to extension auto-detect if set to txt but looks like LJSpeech
+        const parsed = parseTranscriptFile(text, chosenType || ext, {
+          includeNormalized,
+        });
+        await applyParsedTranscripts(parsed);
+      } catch (err) {
+        console.error("Import error", err);
+        uiHelpers?.showFeedback?.(
+          "Failed to import transcripts. " + (err.message || ""),
+          "danger"
+        );
+      } finally {
+        // reset input to allow re-importing the same file
+        importInput.value = "";
+      }
+    });
+  }
+
+  // Extend parser to support .ljspeech and pass options
+  function parseTranscriptFile(text, ext, options = {}) {
+    switch (ext) {
+      case "json":
+        return normalizeJsonTranscripts(JSON.parse(text));
+      case "csv":
+        return parseDelimited(text, ",");
+      case "tsv":
+        return parseDelimited(text, "\t");
+      case "txt":
+        // try TXT blocks first; fallback to LJSpeech-style if pipes are present
+        return text.includes("|")
+          ? parseLJSpeech(text, options)
+          : parseTxtBlocks(text);
+      case "ljspeech":
+        return parseLJSpeech(text, options);
+      default:
+        // Try to auto-detect
+        if (text.includes("|")) return parseLJSpeech(text, options);
+        if (text.includes(",")) return parseDelimited(text, ",");
+        return parseTxtBlocks(text);
+    }
+  }
+
+  // LJSpeech: id|raw|normalized (normalized optional). Map to actual filenames and keep both raw/normalized.
+  function parseLJSpeech(text, { includeNormalized = true } = {}) {
+    const stripQuotes = (s = "") => {
+      s = (s || "").replace(/\uFEFF/g, "").trim(); // remove BOM + trim
+      if (
+        (s.startsWith('"') && s.endsWith('"')) ||
+        (s.startsWith("'") && s.endsWith("'"))
+      ) {
+        s = s.slice(1, -1).trim();
+      }
+      return s;
+    };
+
+    const lines = text.split(/\r?\n/).filter((l) => l && l.trim().length > 0);
+    const map = new Map();
+    for (const line of lines) {
+      const parts = line.split("|");
+      if (parts.length < 2) continue;
+      const idField = stripQuotes(parts[0]);
+      const raw = stripQuotes(parts[1]);
+      const normalized = stripQuotes(parts[2] || "");
+
+      // If ID already has an extension, keep as-is; otherwise default to .wav
+      const hasExt = /\.[^./\\]+$/.test(idField);
+      const key = hasExt ? idField : `${idField}.wav`;
+
+      // Store both so caller can decide how to apply
+      map.set(key, { raw, normalized });
+    }
+    return map; // Map<filename, transcript>
+  }
+
+  // Update applyParsedTranscripts to accept Map or Object
+  async function applyParsedTranscripts(parsed) {
+    // Normalize to a plain object { filename: transcript }
+    let obj;
+    if (parsed instanceof Map) {
+      obj = Object.fromEntries(parsed);
+    } else if (Array.isArray(parsed)) {
+      obj = Object.fromEntries(parsed);
+    } else {
+      obj = parsed;
+    }
+
+    const uploaded = (window.uploadedFiles || []).map((f) => f.name);
+    if (!uploaded.length) {
+      uiHelpers?.showFeedback?.(
+        "No audio files are loaded. Upload audio first, then import transcripts.",
+        "warning"
+      );
+      return;
+    }
+
+    const byBase = new Map();
+    for (const name of uploaded) {
+      const base = name.replace(/\.[^/.]+$/, "");
+      if (!byBase.has(base)) byBase.set(base, []);
+      byBase.get(base).push(name);
+    }
+
+    let applied = 0,
+      ambiguous = 0,
+      missing = 0;
+    // Determine preference for normalized from UI when available
+    const preferNormalized =
+      document.getElementById("import-ljspeech-normalized")?.checked ?? true;
+
+    for (const [key, value] of Object.entries(obj)) {
+      // value can be string (single transcript) or object { raw, normalized }
+      let raw = "";
+      let normalized = "";
+      if (value && typeof value === "object" && !Array.isArray(value)) {
+        raw = (value.raw ?? "").toString();
+        normalized = (value.normalized ?? "").toString();
+      } else {
+        raw = (value ?? "").toString();
+      }
+
+      const t = preferNormalized && normalized ? normalized : raw;
+      if (!t) continue;
+
+      if (uploaded.includes(key)) {
+        transcriptHandler?.setTranscript?.(key, t);
+        if (normalized) {
+          window.settingsHandler?.updateNormalizedText?.(normalized, key);
+        }
+        applied++;
+        continue;
+      }
+
+      const base = key.replace(/\.[^/.]+$/, "");
+      const candidates = byBase.get(base) || [];
+      if (candidates.length === 1) {
+        const name = candidates[0];
+        transcriptHandler?.setTranscript?.(name, t);
+        if (normalized) {
+          window.settingsHandler?.updateNormalizedText?.(normalized, name);
+        }
+        applied++;
+      } else if (candidates.length > 1) {
+        // ambiguous base name
+        for (const cand of candidates) {
+          transcriptHandler?.setTranscript?.(cand, t);
+          if (normalized) {
+            window.settingsHandler?.updateNormalizedText?.(normalized, cand);
+          }
+          applied++;
+        }
+        ambiguous++;
+      } else {
+        missing++;
+      }
+    }
+
+    // Update UI/notify
+    const currentFile = document
+      .getElementById("current-file")
+      ?.textContent?.trim();
+    if (currentFile) {
+      const newT = transcriptHandler?.getTranscript?.(currentFile) || "";
+      const editor = document.getElementById("transcript-editor");
+      if (editor) editor.value = newT;
+      const normEditor = document.getElementById("normalized-editor");
+      const normValue =
+        window.settingsHandler?.getNormalizedText?.(currentFile);
+      if (normEditor && typeof normValue === "string") {
+        normEditor.value = normValue;
+      }
+      document.dispatchEvent(
+        new CustomEvent("app:transcriptSaved", {
+          detail: { file: currentFile },
+        })
+      );
+    }
+
+    uiHelpers?.showFeedback?.(
+      `Imported transcripts: ${applied}. ${
+        ambiguous ? "Ambiguous matches: " + ambiguous + ". " : ""
+      }${missing ? "No match for: " + missing + "." : ""}`,
+      "success"
+    );
+  }
+
+  // Leave other helpers (normalizeJsonTranscripts, parseDelimited, parseTxtBlocks, splitCsvLike) intact
+})();
